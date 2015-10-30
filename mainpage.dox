@@ -1,0 +1,28 @@
+/**
+\mainpage A library for context dependent decision making
+
+This codebase provides a library for generating task simulations within the theory of context dependent decision making (as described in [PUBS?]). The goal is to take care of the simulation heavy lifting and bookkeeping in a way that facilitates both models of many tasks, and easy development of theoretical extensions. To this end, this library is organized around a number of classes implementing commonly needed infrastructure. The intent before a 1.0 release is to replace all with abstract classes and standardize around a simulation interface. 
+
+### Recommended Workflow for New Tasks ### 
+To implement a new task, create a new subdirectory under /tasks. You will need to subclass from Task, and impelment (at minimum) a constructor and a run() method. Your constructor should read configuration information from Config and store any local configuration properties needed. It should also set _summaryDatumNames, _eventDatumNames and _traceDatumNames -- this is what tells Experiment what to set up in the Recorder. Then your run() method can call recorder like this: _recorder->updateDatum(_trialLabel+"MY_EVENT_NAME", Event(STARTTIME, ENDTIME)) for events, _recorder->updateDatum(_trialLabel + "MY_OBS_NAME", OBS) for things you track on the trial level (like RTs), and _recorder->updateDatum(_trialLabel + "MY_TRACE_NAME", Timepoint(_trialTime,VECTOR_OF_VALUES)) for things you want to keep in a trace (like postertiors). See the existing task implementations for other things to do in your run method (like drawing the trial type, initializing Belief, etc). 
+
+### Implemented Classes and Interfaces ###
+
+- Architecture handles aspects of cognitive architecture outside of the sequential sampling decision mechanism. Currently this includes the ability to draw random durations of motor planning times and perceptual nondecision times. Eventually this should turn into an abstract class, with the current class as one implementation. Richer architectures like ACT-R might plug in here. 
+
+- Belief handles the core of the sequential inference machine, the Bayesian belief update (from context or target). As with Architecture, this should eventually turn into an abstract class. Presently, the base Belief class implements what amounts to the inference portion of a MSPRT over the joint probability of context and target as hypotheses. DecayBelief implements a basic memory decay mechanism over the context, and ForgetBelief implements very rudimentary forgetting. Because of the exponential decay and constant forgetting probability, DecayBelief and ForgetBelief yield the same forgetting curves on averagre. 
+
+- Config implements a key-value store for configuration values (mostly by wrapping Richard J. Wagner's great minimal ConfigFile library). It supports saving and loading configurations to a .ini file, loading from a comma-separated strings, or setting and getting values programmatically. It is templated, allowing setting and getting for POD types, and also includes setters and getters for armadillo matrices. This allows the use of a single configuration object that different classes read from as needed. 
+
+- Experiment implements structure and bookkeeping for running multiples of simulation trials (i.e. "experiments"). It properly initializes Recorder based on the experiment and task types, and runs the actual trials. It also in principle supports variable stopping rules (e.g. stopping when enough data is gathered from a given parameter set), though this is not presently used. 
+
+- \ref fatal_error implements a unified error class, lifted wholesale from Mark Nelson's highly informative <a href="http://marknelson.us/2007/11/13/no-exceptions/">blog post</a>. 
+
+- Recorder is designed to manage collecting information from the simulator as it runs -- anything from RTs and responses to individual decision variable trajectories to internal checkpoints. Through a clever little bit of template programming and inheritance, Recorder can hold a heterogenous collection of data, and the same task code can record detailed checkpointing information or summaries only. 
+
+- RNG wraps all the random number generation facilities. Currently it uses armadillo's RNGs (themselves built on c++11), but the centralized wrapping of all things random means that replacing those calls with MKL or TRNG calls should be straightforward. 
+
+- Task implements minimal functionality for running tasks. %Task implementations subclass from Task and implement their own event loop. 
+
+- The \ref utils namespace provides miscellaneous useful functionality: accurate float mean and variance computations using the kahan summation algorithm, and rounding. 
+*/

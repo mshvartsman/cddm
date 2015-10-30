@@ -1,0 +1,33 @@
+/**
+\page Parameters
+
+This page describes all the parameters that could be used in Config, grouped approximately by theme. 
+
+## Architecture Parameters
+- \anchor eblMean eblMean is the mean of the eye-brain lag (a.k.a. perceptual nondecision time). 50 (ms) is a reasonable theoretically-neutral lower bound ( \cite Clark1994, \cite Mouchetant-Rostaing2000), consistent with the earliest EEG deflections seen in response to visual stimuli. Higher settings imply claims about the complexity of representation arriving in the sampling/decision mechanism, since more complex representations are available later (\cite VanRullen2001, \cite Tarkiainen1999, though see also \cite Seeck1997 for very early deflections to face stimuli). Used in Architecture. 
+- \anchor eblSd eblSd is the standard deviation of the eye-brain lag. 0.3 times the mean is a reasonable value. Used in Architecture. 
+- \anchor motorPlanMean motorPlanMean is the mean duration of motor planning. 100-150ms is a typical value. Used in Architecture. 
+- \anchor motorExecMean motorExecMean. This depends on the motor response mechanism -- for a finger buttonpress response 150ms is probably reasonable. Used in Architecture. 
+- \anchor motorSd motorSd is the standard deviation of both motor planning and execution. 0.3 times the mean is a good start. Used in Architecture. 
+
+## Sampling and belief parameters
+- \anchor urPrior urPrior is the prior joint distribution over context and target at the beginning of a trial. urPrior(i,j) is the joint prior of context i target j. Used in Belief. 
+- \anchor contextMeanSpacing contextMeanSpacing is the spacing of the context evidence distributions on the number line (starting at 0). So with 3 contexts and contextMeanSpacing = 3, the means are [0, 3, 6]. Unless trying to replicate specific experiments, it is best to keep this at 1 and use the SD terms to adjust SNR. Used in Belief. 
+- \anchor targetMeanSpacing targetMeanSpacing is the spacing of the target evidence distributions on the number line (starting at 0). So with 3 targets and targetMeanSpacing = 3, the means are [0, 3, 6]. Unless trying to replicate specific experiments, it is best to keep this at 1 and use the SD terms to adjust SNR. Used in Belief. 
+- \anchor decayRate decayRate is the parameter \f$\beta\f$ governing the probability of drawing a correct sample under decaying context. Used in DecayBelief
+- \anchor forgetProb forgetProb is the parameter governing the probability of forgetting the true context at each update. Used in ForgetBelief. 
+- \anchor contextNoise contextNoise and \anchor targetNoise targetNoise are the standard deviations of the evidence distribution for the context and target. Note that this is not "noise" in the conventional diffusion model sense -- this acts more like inverse sample rate, in the sense that it scales both the drift magnitude and diffusion noise of the random walk. Used in FlankerTask and optionally in AxcptTask (which can be parameterized using \ref totalNoise and \ref proportionContextNoise instead). 
+- \anchor decisionThresh decisionThresh is the threshold (in probability space, defined over the posterior) at which the decision is made. Used in FlankerTask and AxcptTask. 
+- \anchor totalNoise totalNoise together with \anchor proportionContextNoise proportionContextNoise is an alternate way to parameterize the SD of the evidence distributions. Instead of specifying the SDs of the two distributions, it is possible to provide the SD of their sum, and a proportion. This can be convenient for example for modeling the total as an individual-level constraint, and the proportion as strategically variable. 
+- \anchor retentionNoise retentionNoise is the SD of the evidence distribution when the context has disappeared and target not yet appeared. Used in AxcptTask. 
+
+## Trial and run parameters. 
+- \anchor timePerStep timePerStep is the simulation granularity (in milliseconds). 10 is a good number unless you are looking for something very fast or subtle. Used in Architecture, FlankerTask, AxcptTask. 
+- \anchor trialDist trialDist is the distribution of trial (context,target) types drawn. This need not be the same as \ref urPrior. Used in Task and its subclasses. 
+- \anchor maxTrials maxTrials is the maximum number of trials to run. Used in Experiment, FlankerTask and AxcptTask. 
+- \anchor nContexts nContexts and \anchor nTargets nTargets is the number of contexts and targets we are updating from. Used in Experiment. 
+- \anchor maxSamps maxSamps is the maximum samples to run before throwing an error. This is mostly there to catch improper sampling, should be set very high. Used in FlankerTask and AxcptTask. 
+- \anchor pPrematureResp pPrematureResp is the probability of making a premature response without seeing any samples, following \cite Yu2009. Used in FlankerTask and AxcptTask. 
+- \anchor retentionIntervalDur retentionIntervalDur specifies the duration of the retention interval in memory tasks like AX-CPT (currently, only AX-CPT actually). This is the time from when the context disappears to when the target apperas. Used in AxcptTask. 
+
+*/
