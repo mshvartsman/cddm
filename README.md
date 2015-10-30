@@ -1,6 +1,6 @@
 dynamic-context-decision-making
 ===============================
-Mike Shvartsman. 
+Mike Shvartsman, Vaibhav Srivastava, & Jon Cohen. 
 
 Library for building of models of decision making with dynamic context. If you use it, you should email me at ms44@princeton.edu! Not only would it make me happy, but it would mean I can tell you when new and exciting improvements happen. 
 
